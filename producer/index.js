@@ -1,11 +1,15 @@
 import Kafka from 'node-rdkafka';
 import eventType from '../eventType.js';
 
-const stream = Kafka.Producer.createWriteStream({
-  'metadata.broker.list': 'localhost:9092'
-}, {}, {
-  topic: 'test'
-});
+const stream = Kafka.Producer.createWriteStream(
+  {
+    'metadata.broker.list': 'localhost:9092',
+  },
+  {},
+  {
+    topic: 'test',
+  }
+);
 
 stream.on('error', (err) => {
   console.error('Error in our kafka stream');
@@ -16,7 +20,7 @@ function queueRandomMessage() {
   const category = getRandomAnimal();
   const noise = getRandomNoise(category);
   const event = { category, noise };
-  const success = stream.write(eventType.toBuffer(event));     
+  const success = stream.write(eventType.toBuffer(event));
   if (success) {
     console.log(`message queued (${JSON.stringify(event)})`);
   } else {
