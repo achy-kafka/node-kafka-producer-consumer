@@ -1,6 +1,7 @@
-docker exec -it kafka /opt/bitnami/kafka/bin/kafka-topics.sh \
-    --create \
-    --zookeeper zookeeper:2181 \
-    --replication-factor 1 \
-    --partitions 1 \
-    --topic test
+docker-compose exec kafka \ /opt/bitnami/kafka/bin/kafka-topics.sh  
+--create 
+--topic test 
+--partitions 1 
+--replication-factor 1 
+--if-not-exists --zookeeper localhost:9092
+
