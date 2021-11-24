@@ -20,6 +20,7 @@ const table = kafkaStreams.getKTable('test', keyValueMapperEtl);
 
 function keyValueMapperEtl(kafkaMessage) {
   const topic = kafkaMessage.topic;
+  //console.log(kafkaMessage)
   const value = eventType.fromBuffer(kafkaMessage.value) // { category: 'CAT', noise: 'meow' }
   return {
     key: value.category,
@@ -30,7 +31,7 @@ function keyValueMapperEtl(kafkaMessage) {
 
 //consume the first 10 messages on the topic to build the table
 table
-  .consumeUntilCount(500, () => {
+  .consumeUntilCount(10, () => {
     //fires when 10 messages are consumed
 
     //the table has been built, there are two ways
@@ -70,6 +71,7 @@ table.start();
 const printTable = (req, res, next) => {
   table.getTable()
   .then((map) => {
+    console.log(map)
     res.locals.table = map;
     next();
   })

@@ -1,9 +1,15 @@
 import express from 'express';
 import printTable from '../consumer/ktable.js';
-import printStream from '../consumer/index.js';
+import { io } from 'socket.io-client';
+
+
 
 const app = express();
 const PORT = 3000;
+const socket = io("http://localhost:5000");
+socket.on("consumerMessage", data => {
+  console.log('data received on pretend client server', data);
+});
 
 // handle parsing request body
 app.use(express.urlencoded({ extended: true }));
