@@ -5,6 +5,7 @@
   "description": "",
   "main": "index.js",
   "scripts": {
+    "start": "node --experimental-json-modules server/server.js",
     "start:producer": "node producer/index.js",
     "start:consumer": "node consumer/index.js",
     "start:table": "node --experimental-json-modules consumer/ktable.js"
@@ -13,6 +14,7 @@
   "license": "ISC",
   "dependencies": {
     "avsc": "^5.6.2",
+    "express": "^4.17.1",
     "kafka-streams": "^5.0.0",
     "node-rdkafka": "^2.10.1"
   }

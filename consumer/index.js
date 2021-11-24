@@ -11,6 +11,21 @@ var consumer = new Kafka.KafkaConsumer(
 
 consumer.connect();
 
+// const printStream =(req, res, next) => {
+//   consumer
+//   .on('ready', () => {
+//     console.log('consumer ready..');
+//     consumer.subscribe(['test']);
+//     consumer.consume();
+//   })
+//   .on('data', function (data) {
+//     res.locals.msgs = eventType.fromBuffer(data.value)
+//     return next();
+//   });
+// }
+
+// export default printStream;
+
 consumer
   .on('ready', () => {
     console.log('consumer ready..');
