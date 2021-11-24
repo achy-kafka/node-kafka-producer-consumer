@@ -22,7 +22,7 @@ A kafka producer/consumer proof of concept using node.
 ## Instructions for local Kafka Cluster
 
 0. `npm install` - installs npm dependencies.
-1. Spin up Kafka instance by entering this command in terminal: docker-compose up
+1. Spin up Kafka instance by entering this command in terminal: `docker-compose up`
    After typing this in terminal, open Docker Desktop app. Find the Kafka container, and type following two commands in its CLI:
    Navigate into current broker:
    ` cd opt/ka`fka

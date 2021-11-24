@@ -1,21 +1,6 @@
 'use strict';
-
-/*
- in contrast to a KStream (change-log topic representation)
- a KTable is a table like representation of a topic,
- meaning only the last value of a key will be present in the table.
- the input topic could look like this:
- "fruit banana"
- "fruit cherry"
- "vegetable broccoli"
- "fruit strawberry"
- "vegetable lettuce"
- the output topic would then look like this:
- "fruit strawberry",
- "vegetable lettuce"
-*/
-
 import { KafkaStreams } from 'kafka-streams';
+import eventType from '../eventType.js';
 import config from '../tsconfig.json';
 
 const kafkaStreams = new KafkaStreams(config);
@@ -29,18 +14,23 @@ kafkaStreams.on('error', (error) => {
 //as tables can only be built on key-value pairs
 const table = kafkaStreams.getKTable('test', keyValueMapperEtl);
 
+// DELETE: Tried to see if could use AVROs inferred schema to decode.
+// NOT POSSIBLE
+// const type = avro.Type.forValue({category:"CAT",noise: "woof"});
+
 function keyValueMapperEtl(kafkaMessage) {
-  const value = kafkaMessage.value.toString('utf8');
-  const elements = value.toLowerCase().split(' ');
+  const topic = kafkaMessage.topic;
+  const value = eventType.fromBuffer(kafkaMessage.value) // { category: 'CAT', noise: 'meow' }
   return {
-    key: elements[0],
-    value: elements[1],
+    key: value.category,
+    value: value.noise,
   };
 }
 
+
 //consume the first 10 messages on the topic to build the table
 table
-  .consumeUntilCount(10, () => {
+  .consumeUntilCount(500, () => {
     //fires when 10 messages are consumed
 
     //the table has been built, there are two ways
@@ -67,7 +57,7 @@ table
   //will apply for any message that is on the stream (in change-log behaviour)
   //you have to consume the topic first, for it to be present as table
   .atThroughput(10, () => {
-    //fires once when 50 messages are consumed
+    //fires once when 10 messages are consumed
     console.log('consumed 10 messages.');
   });
 
@@ -75,3 +65,14 @@ table
 //will emit messages as soon as
 //kafka consumer is ready
 table.start();
+
+
+const printTable = (req, res, next) => {
+  table.getTable()
+  .then((map) => {
+    res.locals.table = map;
+    next();
+  })
+}
+
+export default printTable;
