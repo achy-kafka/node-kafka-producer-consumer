@@ -1,6 +1,8 @@
 import Kafka from 'node-rdkafka';
+// const { Kafka } = require('kafkajs');
 import eventType from '../eventType.js';
 import { io } from 'socket.io-client';
+
 
 var consumer = new Kafka.KafkaConsumer(
   {
