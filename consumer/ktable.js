@@ -19,14 +19,16 @@ const table = kafkaStreams.getKTable('test', keyValueMapperEtl);
 // const type = avro.Type.forValue({category:"CAT",noise: "woof"});
 
 function keyValueMapperEtl(kafkaMessage) {
+  // console.log(kafkaMessage);
   const topic = kafkaMessage.topic;
-  const value = eventType.fromBuffer(kafkaMessage.value) // { category: 'CAT', noise: 'meow' }
+  // console.log('topic--->', topic);
+  const value = eventType.fromBuffer(kafkaMessage.value); // { category: 'CAT', noise: 'meow' }
+  console.log('value', value);
   return {
-    key: value.category,
-    value: value.noise,
+    key: value.tripId,
+    value: value.distance,
   };
 }
-
 
 //consume the first 10 messages on the topic to build the table
 table
@@ -38,7 +40,7 @@ table
 
     //1. as map object
     table.getTable().then((map) => {
-      console.log(map); //will log "strawberry"
+      console.log('tablecontents--->', map); //will log "strawberry"
     });
 
     //2. as replayed stream
@@ -66,13 +68,12 @@ table
 //kafka consumer is ready
 table.start();
 
-
 const printTable = (req, res, next) => {
-  table.getTable()
-  .then((map) => {
+  table.getTable().then((map) => {
+    console.log('in printTable middleware', map);
     res.locals.table = map;
     next();
-  })
-}
+  });
+};
 
 export default printTable;

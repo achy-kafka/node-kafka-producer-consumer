@@ -1,6 +1,6 @@
 import express from 'express';
 import printTable from '../consumer/ktable.js';
-import printStream from '../consumer/index.js';
+// import printStream from '../consumer/index.js';
 
 const app = express();
 const PORT = 3000;
@@ -22,4 +22,3 @@ app.get('/table', printTable, (req, res) => {
 app.listen(PORT, () => {
   console.log(`Server listening on port: ${PORT}`);
 });
-
