@@ -1,18 +1,68 @@
 import avro from 'avsc';
-//latest trip  distance schema attempt
+
+// trip - status obj schema success
 export default avro.Type.forSchema({
   type: 'record',
+  name: 'Status',
   fields: [
+    {
+      name: 'statusId',
+      type: 'string',
+    },
     {
       name: 'tripId',
       type: { type: 'enum', symbols: ['trip1', 'trip2'] },
     },
     {
+      name: 'vehicleId',
+      type: { type: 'enum', symbols: ['car1', 'car2'] },
+    },
+    {
+      name: 'position',
+      type: {
+        type: 'record',
+        name: 'Position',
+        fields: [
+          {
+            name: 'lat',
+            type: 'float',
+          },
+          {
+            name: 'lon',
+            type: 'float',
+          },
+        ],
+      },
+    },
+    {
+      name: 'batteryLevel',
+      type: 'int',
+    },
+    {
       name: 'distance',
       type: 'int',
     },
+    {
+      name: 'timestamp',
+      type: 'string',
+    },
   ],
 });
+
+//trip  distance schema success
+// export default avro.Type.forSchema({
+//   type: 'record',
+//   fields: [
+//     {
+//       name: 'tripId',
+//       type: { type: 'enum', symbols: ['trip1', 'trip2'] },
+//     },
+//     {
+//       name: 'distance',
+//       type: 'int',
+//     },
+//   ],
+// });
 
 // quick status schema
 // export default avro.Type.forSchema({

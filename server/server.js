@@ -1,5 +1,5 @@
 import express from 'express';
-import printTable from '../consumer/ktable.js';
+import funcs from '../consumer/ktable.js';
 // import printStream from '../consumer/index.js';
 
 const app = express();
@@ -11,7 +11,10 @@ app.use(express.json());
 
 // serve home page
 app.get('/', (req, res) => res.status(200).send('Home Page'));
-app.get('/table', printTable, (req, res) => {
+app.get('/table1', funcs.printTable1, (req, res) => {
+  res.status(200).json(res.locals.table);
+});
+app.get('/table2', funcs.printTable2, (req, res) => {
   res.status(200).json(res.locals.table);
 });
 

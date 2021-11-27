@@ -33,5 +33,5 @@ consumer
     consumer.consume();
   })
   .on('data', function (data) {
-    console.log(`received message: ${eventType.fromBuffer(data.value)}`);
+    console.log(`received message: ${eventType.fromBuffer(data.value)} \n`);
   });

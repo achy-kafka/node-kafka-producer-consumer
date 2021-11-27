@@ -16,22 +16,61 @@ stream.on('error', (err) => {
   console.error(err);
 });
 const distanceFunc = getDistance();
+const batteryFunc = getBattery();
 
 function queueTripInfo() {
   const tripId = getRandomTripId();
+  const statusId = getStatusId(tripId);
+  const vehicleId = getVehicleId(tripId);
   const distance = distanceFunc(tripId);
-  console.log('distance--->', distance);
-  const event = { tripId, distance };
+  const batteryLevel = batteryFunc(tripId);
+  const position = getPosition();
+  const now = new Date();
+  const timestamp = now.toString();
+  // console.log('distance--->', distance);
+  // console.log('batteryLevel--->', batteryLevel);
+  // console.log('positon--->', position);
+  // console.log('timestamp--->', timestamp);
+  const event = {
+    statusId,
+    tripId,
+    vehicleId,
+    position,
+    batteryLevel,
+    distance,
+    timestamp,
+  };
+
   const success = stream.write(eventType.toBuffer(event));
   if (success) {
-    console.log(`message queued (${JSON.stringify(event)})`);
+    console.log(`message queued (${JSON.stringify(event)}) \n`);
   } else {
     console.log('Too many messages in the queue already..');
   }
 }
+
+function getStatusId(tripId) {
+  if (tripId === 'trip1') return 'status1';
+  if (tripId === 'trip2') return 'status2';
+}
+
+function getPosition() {
+  const lat = 40 + Math.random();
+  const lon = -(70 + Math.random());
+  return {
+    lat: lat,
+    lon: lon,
+  };
+}
+
 function getRandomTripId() {
   const trips = ['trip1', 'trip2'];
   return trips[Math.floor(Math.random() * trips.length)];
+}
+
+function getVehicleId(tripId) {
+  if (tripId === 'trip1') return 'car1';
+  if (tripId === 'trip2') return 'car2';
 }
 
 function getDistance() {
@@ -42,6 +81,19 @@ function getDistance() {
       return cache[tripId];
     } else {
       cache[tripId] = Math.floor(Math.random() * 10);
+      return cache[tripId];
+    }
+  };
+}
+
+function getBattery() {
+  const cache = {};
+  return function innerFunc(tripId) {
+    if (cache[tripId]) {
+      cache[tripId] = cache[tripId] - 1;
+      return cache[tripId];
+    } else {
+      cache[tripId] = Math.floor(Math.random() * 10) + 85;
       return cache[tripId];
     }
   };
