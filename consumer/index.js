@@ -1,30 +1,26 @@
-import Kafka from 'node-rdkafka';
-// const { Kafka } = require('kafkajs');
-import eventType from '../eventType.js';
-import { io } from 'socket.io-client';
+const { Kafka } = require ('kafkajs'); // NPM Package: Javascript compatible Kafka
+const eventType = require ('../eventType.js'); // Message AVRO Schema
+const config = require ('../kafkaConfig.js'); // Information about Kafka Cluster and Topics
 
+// This Kafka instance is hosted on the Confluent Cloud, using the credentials in kafkaConfig.js.
+// Topics can be created online through confluent cloud portal
 
-var consumer = new Kafka.KafkaConsumer(
-  {
-    'group.id': 'kafka',
-    'metadata.broker.list': 'localhost:9092',
-  },
-  {}
-);
+const kafka = new Kafka(config);
 
-consumer.connect();
-
-const socket = io("http://localhost:5000");
-
-
-consumer
-  .on('ready', () => {
-    console.log('consumer ready..');
-    consumer.subscribe(['test']);
-    consumer.consume();
-  })
-  .on('data', async function (data) {
-    console.log(`received message: ${eventType.fromBuffer(data.value)}`);
-    const emitted = await socket.emit("consumerMessage", data);
-    console.log('emitted', typeof emitted)
+// Initiates a new consumer for every topic in config file
+for (let i = 0; i < config.topics.length; i++) {
+  const topicName = config.topics[i];
+  const consumer = kafka.consumer({ groupId: `${topicName}-group` });
+  consumer.connect();
+  consumer.subscribe({ topic: `${topicName}`, fromBeginning: true });
+  consumer.run({
+    eachMessage: async ({ topic, partition, message }) => {
+        console.log({
+            key: message.key.toString(),
+            value: eventType.fromBuffer(message.value),
+            headers: message.headers,
+        });
+    },
   });
+
+}

@@ -1,15 +1,22 @@
-import avro from 'avsc';
-
-export default avro.Type.forSchema({
-  type: 'record',
-  fields: [
+const avro = require ('avsc');
+module.exports =  avro.Type.forSchema({
+  "fields": [
     {
-      name: 'category',
-      type: { type: 'enum', symbols: ['DOG', 'CAT'] }
+      "name": "category",
+      "type": {
+        "name": "categoryType",
+        "symbols": [
+          "DOG",
+          "CAT"
+        ],
+        "type": "enum"
+      }
     },
     {
-      name: 'noise',
-      type: 'string',
+      "name": "noise",
+      "type": "string"
     }
-  ]
+  ],
+  "name": "animals",
+  "type": "record"
 });

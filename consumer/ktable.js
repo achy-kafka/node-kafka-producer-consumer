@@ -1,80 +1,26 @@
-'use strict';
-import { KafkaStreams } from 'kafka-streams';
-import eventType from '../eventType.js';
-import config from '../tsconfig.json';
+const avro = require ('avsc');
+const { Kafka } = require ('kafkajs'); // NPM Package: Javascript compatible Kafka
+const fs = require ('fs');
+const path = require ('path');
 
-const kafkaStreams = new KafkaStreams(config);
+const eventType = require ('../eventType.js'); // Message AVRO Schema
+const config = require ('../kafkaConfig.js'); // Information about Kafka Cluster and Topics
 
-kafkaStreams.on('error', (error) => {
-  console.log('Error occured:', error.message);
-});
-
-//creating a ktable requires a function that can be
-//used to turn the kafka messages into key-value objects
-//as tables can only be built on key-value pairs
-const table = kafkaStreams.getKTable('test', keyValueMapperEtl);
-
-// DELETE: Tried to see if could use AVROs inferred schema to decode.
-// NOT POSSIBLE
-// const type = avro.Type.forValue({category:"CAT",noise: "woof"});
-
-function keyValueMapperEtl(kafkaMessage) {
-  const topic = kafkaMessage.topic;
-  //console.log(kafkaMessage)
-  const value = eventType.fromBuffer(kafkaMessage.value) // { category: 'CAT', noise: 'meow' }
-  return {
-    key: value.category,
-    value: value.noise,
-  };
-}
-
-
-//consume the first 10 messages on the topic to build the table
-table
-  .consumeUntilCount(10, () => {
-    //fires when 10 messages are consumed
-
-    //the table has been built, there are two ways
-    //to access the content now
-
-    //1. as map object
-    table.getTable().then((map) => {
-      console.log(map); //will log "strawberry"
+// Initiates a new consumer for every topic in config file
+const kafka = new Kafka(config);
+for (let i = 0; i < config.topics.length; i++) {
+  try {
+    const topicName = config.topics[i];
+    const consumer = kafka.consumer({ groupId: `${topicName}-group` });
+    consumer.connect();
+    consumer.subscribe({ topic: `${topicName}`, fromBeginning: true });
+    consumer.run({
+      eachMessage: async ({ topic, partition, message }) => {
+        const table = JSON.parse(fs.readFileSync(path.resolve(__dirname, './ktable.json'), 'UTF-8'));
+        const key = message.key.toString();
+        table[key] = eventType.fromBuffer(message.value);
+        fs.writeFileSync(path.resolve(__dirname, './ktable.json'), JSON.stringify(table), 'UTF-8')
+      },
     });
-
-    //2. as replayed stream
-    // table.forEach(row => {
-    //     console.log(row);
-    // });
-
-    //you can replay as often as you like
-    //replay will simply place every key-value member
-    //of the internal map onto the stream once again
-    // table.replay();
-
-    //kafka consumer will be closed automatically
-  })
-  //be aware that any operator you append during this runtime
-  //will apply for any message that is on the stream (in change-log behaviour)
-  //you have to consume the topic first, for it to be present as table
-  .atThroughput(10, () => {
-    //fires once when 10 messages are consumed
-    console.log('consumed 10 messages.');
-  });
-
-//start the stream/table
-//will emit messages as soon as
-//kafka consumer is ready
-table.start();
-
-
-const printTable = (req, res, next) => {
-  table.getTable()
-  .then((map) => {
-    console.log(map)
-    res.locals.table = map;
-    next();
-  })
+} catch (err) {console.log(err)}
 }
-
-export default printTable;

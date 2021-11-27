@@ -1,7 +1,7 @@
-import express from 'express';
-import printTable from '../consumer/ktable.js';
-import { io } from 'socket.io-client';
-
+const express = require ('express');
+const { io } = require ('socket.io-client');
+const fs = require ('fs');
+const path = require ('path');
 
 
 const app = express();
@@ -15,15 +15,21 @@ socket.on("consumerMessage", data => {
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 
+// middleware 
+const printTable = (req, res, next) => {
+  const table = JSON.parse(fs.readFileSync(path.resolve(__dirname, '../consumer/ktable.json'), 'UTF-8'));
+  res.locals.table = table;
+  return next();
+  }
+
 // serve home page
 app.get('/', (req, res) => res.status(200).send('Home Page'));
+
+// serve latest table
 app.get('/table', printTable, (req, res) => {
   res.status(200).json(res.locals.table);
 });
 
-// app.get('/stream', printStream, (req, res) => {
-//   res.status(200).json(res.locals.msgs);
-// });
 // start server
 app.listen(PORT, () => {
   console.log(`Server listening on port: ${PORT}`);
