@@ -1,5 +1,5 @@
 const { Kafka } = require ('kafkajs'); // NPM Package: Javascript compatible Kafka
-const eventType = require ('../eventType.js'); // Message AVRO Schema
+const eventType = require ('../eventType.js.js'); // Message AVRO Schema
 const config = require ('../kconfig.js'); // Information about Kafka Cluster and Topics
 
 // This Kafka instance is hosted on the Confluent Cloud, using the credentials in kafkaConfig.js.

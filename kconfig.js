@@ -3,6 +3,19 @@
 // Login: anna.falvello@gmail.com
 // Password: Password11
 
+// Fetching information from the Schema Registry:
+// List all subjects in your Schema Registry
+// curl -s -u <API_KEY>:<API_SECRET> GET https://psrc-q8qx7.us-central1.gcp.confluent.cloud/subjects
+
+// Fetch the latest version of the schema registered under subject “kafka-value”
+// curl -s -u <API_KEY>:<API_SECRET> GET https://psrc-q8qx7.us-central1.gcp.confluent.cloud/subjects/kafka-value/versions/latest
+
+// Specific commands for this cluster instance:
+// List all subjects
+// curl -s -u QYNK56V7RGVKVPAP:fc9MQL2zQ/cjkIftGgIz7jYeePz3yBAqwbKwNzg2dHgY/o9rp96KtSmJ0NfSzlRN GET https://psrc-q8qx7.us-central1.gcp.confluent.cloud/subjects >> ./schemaNames.json
+// Fetch latest version of schema
+// curl -s -u QYNK56V7RGVKVPAP:fc9MQL2zQ/cjkIftGgIz7jYeePz3yBAqwbKwNzg2dHgY/o9rp96KtSmJ0NfSzlRN GET https://psrc-q8qx7.us-central1.gcp.confluent.cloud/subjects/animals/versions/latest >> ./schema.json
+
 const username = 'JUJA6GJGJCDSUYOP'
 const password = '1XIN/fry4johm7kHhZ+n88jeKc11xJR3G07QXzfRmtnKA/f+s7mcbdkdvRIi/ixc'
 

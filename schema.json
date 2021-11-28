@@ -1,0 +1,9 @@
+{
+  "subject": "animals",
+  "version": 1,
+  "id": 100001,
+  "schema": "
+  {\"type\":\"record\",
+    \"name\":\"animals\",
+    \"fields\":[{\"name\":\"category\",\"type\":{\"type\":\"enum\",\"name\":\"categoryType\",\"symbols\":[\"DOG\",\"CAT\"]}},{\"name\":\"noise\",\"type\":\"string\"}]}"
+}

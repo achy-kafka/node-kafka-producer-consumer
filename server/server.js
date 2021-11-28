@@ -1,5 +1,4 @@
 const express = require ('express');
-const { io } = require ('socket.io-client');
 const fs = require ('fs');
 const path = require ('path');
 
@@ -17,8 +16,7 @@ app.use(express.json());
 
 // middleware 
 const printTable = (req, res, next) => {
-  const table = JSON.parse(fs.readFileSync(path.resolve(__dirname, '../consumer/ktable.json'), 'UTF-8'));
-  res.locals.table = table;
+  res.locals.table = JSON.parse(fs.readFileSync(path.resolve(__dirname, '../consumer/ktable.json'), 'UTF-8'));
   return next();
   }
 
